@@ -29,3 +29,18 @@ public:
     bool fileExists(const std::string& filename)  {
         return pp::exists(BuildPath(filename));
     }
+
+    std::optional<std::string> readFile(const std::string& filename)const {
+        auto path = BuildPath(filename); // используем optional (контейнер)  потому что 2 состояния, возвращается либо строка или нихрена
+        if (!pp::exists(path)) {
+            return std::nullopt;
+        }
+        std::ifstream file(path);
+        if (!file.is_open()) {
+            throw std::runtime_error("Error, file cant be opened:" + std::string(filename));
+        }
+        std::string text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>()
+                    );//читает всю строку до конца, можно получать доступ к элементам пока не достигнем конца
+        return text;
+    }
+};
