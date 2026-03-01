@@ -43,4 +43,29 @@ public:
                     );//читает всю строку до конца, можно получать доступ к элементам пока не достигнем конца
         return text;
     }
+    bool writeFile(const std::string& filename, const std::string& text) {
+        auto path = BuildPath(filename);
+        std::ofstream file(path);
+        if (!file.is_open()) { // файл закрывать не нужно, тк он автоматически закроется когда вфйдет из области видимости. RAII освобождается автоматически  в деструкторе
+            return false;
+        }
+        file << text;
+        return true;
+    }
+    std::vector <std::string> listSaveFiles() const {
+        std::vector <std::string> file_names;
+        for (const auto& a : pp::directory_iterator(saveDirectory)) {
+            if (a.is_regular_file()) {
+                file_names.push_back(a.path().filename().string());
+            }
+        }
+        return file_names;
+    }
+    bool deleteFile (const std::string& filename) const {
+        auto path = BuildPath(filename);
+        if (!pp::exists(path)) {
+            return false;
+        }
+        return pp::remove(path);
+    }
 };
