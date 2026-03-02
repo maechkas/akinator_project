@@ -1,0 +1,3 @@
+/Users/maya/Documents/Akinator!/akinator_project/cmake-build-debug/CMakeFiles/akinator_project.dir
+/Users/maya/Documents/Akinator!/akinator_project/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/maya/Documents/Akinator!/akinator_project/cmake-build-debug/CMakeFiles/rebuild_cache.dir
