@@ -10,6 +10,17 @@ private:
     std::unique_ptr<QuestionNode> yes_;
     std::unique_ptr<QuestionNode> no_;
     QuestionNode* parent_;
+public:
+    QuestionNode(const std::string& question, bool isAnswer);
+
+    const std::string& getData() const;
+    bool isAnswerNode() const;
+    QuestionNode* getYesBranch() const;
+    QuestionNode* getNoBranch() const;
+    QuestionNode* getParent() const;
+
+
+
 }
 
 
