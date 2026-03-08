@@ -19,7 +19,9 @@ public:
     QuestionNode* getNoBranch() const;
     QuestionNode* getParent() const;
 
-
+    void setYesBranch(std::unique_ptr<QuestionNode> yes);
+    void setNoBranch(std::unique_ptr<QuestionNode> no);
+    void setParent(QuestionNode* parent);
 
 }
 
