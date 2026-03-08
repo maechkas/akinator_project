@@ -23,6 +23,11 @@ public:
     void setNoBranch(std::unique_ptr<QuestionNode> no);
     void setParent(QuestionNode* parent);
 
+    bool hasYesBranch() const;
+    bool hasNoBranch() const;
+    bool isLeaf() const;
+    void replaceWithQuestion(const std::string& newQuestion, std::unique_ptr<QuestionNode> newYesAnswer,std::unique_ptr<QuestionNode> newNoAnswer);
+
 }
 
 
