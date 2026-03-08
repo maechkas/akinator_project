@@ -3,15 +3,21 @@
 
 #include <string>
 #include <memory>
+
 class QuestionNode {
 private:
-    std::string question_;
+    std::string data_;
     bool isAnswer_;
-    std::unique_ptr<QuestionNode> yes_;
-    std::unique_ptr<QuestionNode> no_;
+    std::unique_ptr<QuestionNode> yesBranch_;
+    std::unique_ptr<QuestionNode> noBranch_;
     QuestionNode* parent_;
 public:
-    QuestionNode(const std::string& question, bool isAnswer);
+    explicit QuestionNode(const std::string& data, bool isAnswer);
+
+    QuestionNode(const QuestionNode&) = delete;
+    QuestionNode& operator=(const QuestionNode&) = delete;
+    QuestionNode(QuestionNode&&) = default;
+    QuestionNode& operator=(QuestionNode&&) = default;
 
     const std::string& getData() const;
     bool isAnswerNode() const;
@@ -28,7 +34,7 @@ public:
     bool isLeaf() const;
     void replaceWithQuestion(const std::string& newQuestion, std::unique_ptr<QuestionNode> newYesAnswer,std::unique_ptr<QuestionNode> newNoAnswer);
 
-}
+};
 
 
 #endif //PROJECT_QUESTIONNODE_H
