@@ -27,7 +27,7 @@ void QuestionNode::setParent(QuestionNode* parent) {
 bool QuestionNode::hasYesBranch() const { return yesBranch_ != nullptr; }
 bool QuestionNode::hasNoBranch() const { return noBranch_ != nullptr; }
 bool QuestionNode::isLeaf() const  { return !hasYesBranch() && !hasNoBranch(); }
- i
+
 void QuestionNode::replaceWithQuestion(const std::string& newQuestion, std::unique_ptr<QuestionNode> newYesAnswer,std::unique_ptr<QuestionNode> newNoAnswer) {
     data_ = newQuestion;
     isAnswer_ = false;
