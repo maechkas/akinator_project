@@ -1,0 +1,9 @@
+#ifndef PROJECT_KNOWLEDGETREE_H
+#define PROJECT_KNOWLEDGETREE_H
+
+
+class KnowledgeTree {
+};
+
+
+#endif //PROJECT_KNOWLEDGETREE_H
