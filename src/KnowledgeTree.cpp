@@ -25,3 +25,5 @@ KnowledgeTree::KnowledgeTree():root_(nullptr),currentNode_(nullptr), nodeCount_(
     currentNode_ = root_.get();
     nodeCount_ = 7;
 }
+Node* KnowledgeTree::getRoot() const {return root_.get();}
+size_t KnowledgeTree::getNodeCount() const {return nodeCount_;}
