@@ -8,16 +8,20 @@
 #include <memory>
 #include <QuestionNode.hpp>
 #include<KnowledgeTree.hpp>
-class Treeserializer {
+class TreeSerializer {
 public:
-    Treeserializer()=default;
-    ~Treeserializer()=default;
-    Treeserializer(const Treeserializer&) = delete;
-    Treeserializer& operator=(const Treeserializer& )= delete;
-    Treeserializer(Treeserializer&&)=default;
-    Treeserializer& operator+(const Treeserializer&&)= default;
+public:
+    TreeSerializer() = default;
+    ~TreeSerializer() = default;
+
+    TreeSerializer(const TreeSerializer&) = delete;
+    TreeSerializer& operator=(const TreeSerializer&) = delete;
+
+    TreeSerializer(TreeSerializer&&) = default;
+    TreeSerializer& operator=(TreeSerializer&&) = default;
+
     std::string serialize(const KnowledgeTree& tree);
-    std::unique_ptr<KnowledgeTree> desertilize(const std::string& jsonstr);
+    std::unique_ptr<KnowledgeTree> deserialize(const std::string& jsonstr);
     bool validate (const std::string& jsonstr);
     std::vector<std::string> getKeys (const std::string& jsonstr);
     bool SaveTo (const KnowledgeTree& tree, const std::string& filename);
@@ -25,7 +29,7 @@ public:
 private:
     nlohmann::json nodeTojson(QuestionNode* node);
     std::unique_ptr <QuestionNode> jsonTonode(const nlohmann::json& j);
-    bool valiateNode(const nlohmann::json& j); //checking fields
+    bool validateNode(const nlohmann::json& j); //checking fields
     size_t countNode(const nlohmann::json& j);
     static constexpr const char* KEY_DATA = "data";
     static constexpr const char* KEY_IS_ANSWER = "isAnswer";
