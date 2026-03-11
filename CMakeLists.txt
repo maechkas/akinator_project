@@ -4,4 +4,6 @@ project(akinator_project)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(akinator_project main.cpp
+        src/EntitySearcher.cpp
+        src/Benchmark.cpp
         include/FileHandler.h)
