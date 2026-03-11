@@ -4,21 +4,23 @@
 
 #pragma once
 
-#include<vector>
-#include<string>
+#include <vector>
+#include <string>
+#include <optional>
 
-class QuestionNode;
+class Node;
 
 class EntitySearcher{
 public:
-    std::vector<std::vector<std::string>> findAllPathsToObject(QuestionNode* root, const std::string& objectName);
+    std::vector<std::vector<std::string>> findAllPathsToObject(const Node* root, const std::string& objectName);
 
-    bool objectExists(QuestionNode* root, const std::string& objectName);
+    bool objectExists(const Node* root, const std::string& objectName);
 
-    std::vector<std::string> getAllObjects(QuestionNode* root);
+    std::vector<std::string> getAllObjects(const Node* root);
 
-    int getObjectDepth(QuestionNode* root, const std::string& objectName);
+    int getObjectDepth(const Node* root, const std::string& objectName);
 
-    std::string findObjectByQuestions(QuestionNode* root, const std::vector<bool>& answers);
+    std::optional<std::string> findObjectByQuestions(const Node* root, const std::vector<bool>& answers);
 
 };
+
