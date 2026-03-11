@@ -35,7 +35,7 @@ public:
     void won();                  // записать победу
     void lost();                //записать поражение
 
-    double getWinRate() const; //процееент побед
+    double getWinRate() const; //процент побед
     void printStats() const; //выводит статистику в консоль
 
     void saveToFile(const std::string& filename) const; //сохраняем в файл все данные игрока и статистику, конст - никакие данные игрока не меняет
