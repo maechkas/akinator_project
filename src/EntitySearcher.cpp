@@ -1,17 +1,5 @@
-//#include "Node.h"
+#include "Node.hpp"
 #include "EntitySearcher.h"
-
-// Временно, чтобы писать код, пока Node не готов
-class Node {
-public:
-    const std::string& getData() const;
-    virtual bool isAnswer() const = 0;
-    virtual bool hasYesBranch() const = 0;
-    virtual bool hasNoBranch() const = 0;
-    virtual Node* getYesBranch() const;
-    virtual Node* getNoBranch() const;
-
-};
 
 // вспомогательная рекурсивная функция, которая ищет путь от узла, до нужного объекта
 void findPathsHelper(const Node* node, const std::string& target,

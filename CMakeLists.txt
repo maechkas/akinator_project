@@ -7,3 +7,4 @@ add_executable(akinator_project main.cpp
         src/EntitySearcher.cpp
         src/Benchmark.cpp
         include/FileHandler.h)
+target_include_directories(akinator_project PRIVATE include)
