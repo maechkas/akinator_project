@@ -1,4 +1,4 @@
-#include "Node.hpp"
+#include "../include/Node.hpp"
 
 Node::Node(const std::string& data) : data_(data), parent_(nullptr) {}
 

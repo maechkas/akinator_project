@@ -1,4 +1,4 @@
-#include "KnowledgeTree.hpp"
+#include "../include/KnowledgeTree.hpp"
 #include <functional>
 
 KnowledgeTree::KnowledgeTree():root_(nullptr),currentNode_(nullptr), nodeCount_(0) {
