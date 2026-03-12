@@ -4,15 +4,8 @@
 #include "FileHandler.h"
 #include "KnowledgeTree.hpp"
 #include "EntitySearcher.h"
-//#include "TreeSerializer.h"
+#include "TreeSerializer.h"
 
-// заглушка, пока не подгружен TreeSerializer
-class TreeSerializer {
-public:
-    static std::unique_ptr<KnowledgeTree> deserialize(const std::string& json) {
-        return std::make_unique<KnowledgeTree>();
-    }
-};
 
 
 // измеряет время загрузки файлов (подается файл, переписывается в строку, преобразуется в дерево)
