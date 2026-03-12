@@ -1,6 +1,8 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 project(akinator_project)
-set(CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MACOSX_RPATH TRUE)
 set(CMAKE_SKIP_BUILD_RPATH FALSE)
 set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
@@ -8,10 +10,28 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 enable_testing()
 
-# Библиотека
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-add_library(akinator_lib ${SOURCES})
-target_include_directories(akinator_lib PRIVATE include)
+# ========== ОСНОВНАЯ БИБЛИОТЕКА ==========
+file(GLOB_RECURSE LIB_SOURCES "src/*.cpp")
+list(REMOVE_ITEM LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/tests/main.cpp")
+
+add_library(akinator_lib STATIC ${LIB_SOURCES})
+target_include_directories(akinator_lib PUBLIC include)
+
+# ========== JSON (АВТОМАТИЧЕСКАЯ ЗАГРУЗКА) ==========
+include(FetchContent)
+FetchContent_Declare(
+        nlohmann_json
+        URL https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz
+        DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+FetchContent_MakeAvailable(nlohmann_json)
+
+# Подключаем заголовочные файлы JSON к нашей библиотеке
+target_include_directories(akinator_lib PRIVATE
+        ${nlohmann_json_SOURCE_DIR}/include
+)
+
+message(STATUS "JSON library downloaded and connected from ${nlohmann_json_SOURCE_DIR}/include")
 
 # JSON
 find_package(nlohmann_json QUIET)
