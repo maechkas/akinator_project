@@ -33,11 +33,11 @@ target_include_directories(akinator_lib PRIVATE
 
 message(STATUS "JSON library downloaded and connected from ${nlohmann_json_SOURCE_DIR}/include")
 
-# ========== ИСПОЛНЯЕМЫЙ ФАЙЛ ИГРЫ ==========
-add_executable(akinator_project main.cpp)
-target_link_libraries(akinator_project PRIVATE akinator_lib)
-target_include_directories(akinator_project PRIVATE include)
-
+# JSON
+find_package(nlohmann_json QUIET)
+if(nlohmann_json_FOUND)
+    target_link_libraries(akinator_lib nlohmann_json::nlohmann_json)
+endif()
 # ========== ТЕСТЫ ==========
 include(FetchContent)
 FetchContent_Declare(
