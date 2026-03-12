@@ -1,4 +1,4 @@
-#include "AnswerNode.hpp"
+#include "../include/AnswerNode.hpp"
 
 AnswerNode::AnswerNode(const std::string& data) : Node(data) {}
 
