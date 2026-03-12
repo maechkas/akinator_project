@@ -1,4 +1,4 @@
-#include "file_serial/tree_serializer.h"
+#include "tree_serializer.h"
 #include <fstream>
 #include <ctime>  // Добавлено для std::time
 #include "KnowledgeTree.hpp"
@@ -17,7 +17,7 @@ std::string TreeSerializer::serialize(const KnowledgeTree &tree) {
         if (!root) {
             throw std::runtime_error("Root is not QuestionNode");
         }
-        json j;
+        nlohmann::json j;
         j["root"] = nodeTojson(root);
         j["count"] = countNode(j["root"]);
         j["serializedAT"] = std::time(nullptr);
@@ -135,7 +135,7 @@ std::unique_ptr<KnowledgeTree> TreeSerializer::LoadingFrom(const std::string& fi
 }
 
 // Private methods
-json TreeSerializer::nodeTojson(QuestionNode* node) {  // nodeTojson → nodeToJson
+nlohmann::json TreeSerializer::nodeTojson(QuestionNode* node) {  // nodeTojson → nodeToJson
     if (!node) {
         throw std::runtime_error("nodeToJson: passed nullptr");
     }
@@ -159,7 +159,7 @@ json TreeSerializer::nodeTojson(QuestionNode* node) {  // nodeTojson → nodeToJ
     return j;
 }
 
-std::unique_ptr<QuestionNode> TreeSerializer::jsonTonode(const json& j) {  // jsonTonode → jsonToNode
+std::unique_ptr<QuestionNode> TreeSerializer::jsonTonode(const nlohmann::json& j) {  // jsonTonode → jsonToNode
     if (!j.contains(KEY_DATA) || !j.contains(KEY_IS_ANSWER)) {
         throw std::runtime_error("jsonToNode: missing required fields");
     }
@@ -168,7 +168,7 @@ std::unique_ptr<QuestionNode> TreeSerializer::jsonTonode(const json& j) {  // js
     std::string data = j.at(KEY_DATA).get<std::string>();
     auto node = std::make_unique<QuestionNode>(data);  // Только 1 аргумент!
     bool isAnswer = j.at(KEY_IS_ANSWER).get<bool>();
-    // Нужен метод setIsAnswer в QuestionNode для установки флага после создания!
+
 
     if (!isAnswer) {
         if (j.contains(KEY_YES) && !j[KEY_YES].is_null()) {
@@ -185,7 +185,7 @@ std::unique_ptr<QuestionNode> TreeSerializer::jsonTonode(const json& j) {  // js
     return node;
 }
 
-bool TreeSerializer::validateNode(const json& j) {
+bool TreeSerializer::validateNode(const nlohmann::json& j) {
     if (!j.is_object()) {
         std::cerr << "Error: node is not an object" << std::endl;
         return false;
@@ -231,7 +231,7 @@ bool TreeSerializer::validateNode(const json& j) {
     return true;
 }
 
-size_t TreeSerializer::countNode(const json& j) {  // Оставлено countNode (верно)
+size_t TreeSerializer::countNode(const nlohmann::json& j) {  // Оставлено countNode (верно)
     size_t count = 1;
     if (j.contains(KEY_IS_ANSWER) && !j[KEY_IS_ANSWER].get<bool>()) {
         if (j.contains(KEY_YES) && !j[KEY_YES].is_null()) {
