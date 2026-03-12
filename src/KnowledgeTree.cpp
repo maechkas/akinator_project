@@ -139,11 +139,11 @@ void KnowledgeTree::learnNewObject(const std::string& newObject,const std::strin
         nodeCount_ += 2;
     }
 }
-void KnowledgeTree::buildFromJson(std::unique_ptr<Node> newRoot) {
+void KnowledgeTree::buildFromJson(Node* newRoot) {
     if (!newRoot) {
         throw std::runtime_error("Cannot build from null root");
     }
-    root_ = std::move(newRoot);
+    root_.reset(newRoot);
     currentNode_ = root_.get();
     nodeCount_ = calculateNodeCount(root_.get());
 }

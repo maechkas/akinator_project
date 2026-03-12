@@ -34,7 +34,7 @@ public:
     Node* getCurrentNode() const;
 
     void learnNewObject(const std::string& newObject,const std::string& newQuestion,bool answerForNew);
-    void buildFromJson(std::unique_ptr<Node> newRoot);
+    void buildFromJson(Node* newRoot);
 
 private:
     size_t calculateNodeCount(Node* node) const;
