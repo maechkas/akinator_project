@@ -4,8 +4,7 @@
 #include "FileHandler.h"
 #include "KnowledgeTree.hpp"
 #include "EntitySearcher.h"
-#include "file_serial/tree_serializer.h"
-#include <memory>
+#include "TreeSerializer.h"
 
 
 

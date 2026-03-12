@@ -1,3 +1,5 @@
-//
-// Created by Maya on 11.03.2026.
-//
+#include <iostream>
+
+int main() {
+    std::cout<<"ura pobeda";
+}
