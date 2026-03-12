@@ -1,5 +1,5 @@
 #include <iostream>
 
 int main() {
-    std::cout << "testing" << std::endl;
+    std::cout << "Акинатор запущен!" << std::endl;
 }

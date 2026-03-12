@@ -6,7 +6,7 @@
 #define AKINATOR_PROJECT_GAMESESSION_H
 
 #include "Player.h"
-#include "KnowledgeTree.h"
+#include "KnowledgeTree.hpp"
 #include <memory> //умные указатели
 #include <iostream>
 #include <string>

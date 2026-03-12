@@ -8,13 +8,11 @@ tree_(tree), player_(std::move(player)) {
 }
 
 void GameSession::startNewGame() {
-    tree_.resetToRoot();        //метод Ангелины, встаем в начала дерева вопросов (в корень)
+    tree_.resetGame();
     questions_asked_= 0;
     game_active_ = true;
     player_->incrementGamesPlayed();
 }
-
-
 
 //-------ПОВЕДЕНИЕ АКТИНАТОРА------//
 std::string GameSession::getCurrentQuestion() const {
@@ -22,21 +20,19 @@ std::string GameSession::getCurrentQuestion() const {
         throw GameException("сейчас игра не активна, хочешь сыграть - запусти");
     }
 
-    const auto* current = tree_.getCurrentNode();  //ангелинин метод для получения текущего узла
+    const auto* current = tree_.getCurrentNode();  // метод Ангелины
 
     if (!current) {
         throw GameException("узла нет((");
     }
 
-    if (current->isAnswer()) {          //дошли до предположения - выводим его
+    if (current->isAnswer()) {
         return "боги нашептали мне, ты загадал: " + current->getData() + ", напиши 'да' - если я прав, 'нет' - если я ошибся";
     }
-    else {                              //если еще не дошли до догадки и это вопрос - возвращаем этот вопрос
-       return current->getData();
+    else {
+        return current->getData();
     }
 }
-
-
 
 //-------ОБРАБОТКА ОТВЕТОВ ИГРОКА------//
 void GameSession::processAnswer(bool answer) {
@@ -46,28 +42,24 @@ void GameSession::processAnswer(bool answer) {
     questions_asked_++;
 
     if (questions_asked_ > MAX_QUESTIONS) {
-        throw GameException("у акинатора выгорание, сыграем позже"); //защита на случай неправильной связи узлов -> рекурсия вопросов
+        throw GameException("у акинатора выгорание, сыграем позже");
     }
 
     if (answer == true) {
-        tree_.moveToYes();
+        tree_.moveYes();
     }
     else {
-        tree_.moveToNo();
+        tree_.moveNo();
     }
 
-    if (tree_.isCurrentNodeAnswer()) { //если узел дошел до предположения - завершаем игру
+    if (tree_.isCurrentNodeAnswer()) {
         game_active_ = false;
     }
 }
 
 bool GameSession::isGameFinished() const {
-    if (!game_active_) {
-        return true;
-    }
-    return false;
+    return !game_active_;
 }
-
 
 //акинатор дошел до предположения
 bool GameSession::checkGuess() {
@@ -90,11 +82,9 @@ bool GameSession::checkGuess() {
     }
 }
 
-
-
 //обучение
 void GameSession::learnMode(){
-    std::string oldAnswer = tree_.getCurrentNode()->getData(); //сохраняем в каком узле(ответе) был комп
+    std::string oldAnswer = tree_.getCurrentNode()->getData();
     std::cout << "поведай же, что было на твоем уме? ";
     std::string newObject;
     std::getline(std::cin, newObject);
@@ -111,7 +101,6 @@ void GameSession::learnMode(){
     std::cout << "спасибо тебе, о мудрый человек! теперь я знаю о " + newObject +"!" << std::endl;
 }
 
-
 //игрок сдался
 void GameSession::surrender() {
     if (!game_active_) {
@@ -122,9 +111,4 @@ void GameSession::surrender() {
     learnMode();
     player_->lost();
     game_active_ = false;
-
 }
-
-
-
-
