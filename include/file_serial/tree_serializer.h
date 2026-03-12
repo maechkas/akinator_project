@@ -10,7 +10,6 @@
 #include<KnowledgeTree.hpp>
 class TreeSerializer {
 public:
-public:
     TreeSerializer() = default;
     ~TreeSerializer() = default;
 
