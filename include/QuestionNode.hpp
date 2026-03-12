@@ -22,6 +22,9 @@ public:
     Node* getYesBranch() const override;
     Node* getNoBranch() const override;
 
+    std::unique_ptr<Node> releaseYesBranch();
+    std::unique_ptr<Node> releaseNoBranch();
+
     void setYesBranch(std::unique_ptr<Node> yes);
     void setNoBranch(std::unique_ptr<Node> no);
 

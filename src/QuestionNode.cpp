@@ -1,4 +1,4 @@
- #include "QuestionNode.hpp"
+  #include "QuestionNode.hpp"
 
 QuestionNode::QuestionNode(const std::string& data): Node(data), yesBranch_(nullptr), noBranch_(nullptr) {}
 
