@@ -47,3 +47,37 @@ TEST(TreeSerializerTest, SerializeTree) {
     EXPECT_FALSE(json.empty());
     std::cout << "Json: " << json << "\n";
 }
+
+TEST(TreeSerializerTest, FullRoundtrip) {
+    TreeSerializer s;
+
+    auto tree = std::make_unique<KnowledgeTree>();
+    auto root = std::make_unique<QuestionNode>("Человек?");
+    auto yesAns = std::make_unique<AnswerNode>("Бэтмен");
+    root->setYesBranch(std::move(yesAns));
+    tree->buildFromJson(std::move(root));
+
+    // 2. Проверяем, что дерево НЕ пустое
+    ASSERT_NE(tree->getRoot(), nullptr);
+
+    // 3. serialize → deserialize
+    std::string json = s.serialize(*tree);
+    auto back = s.deserialize(json);
+
+    //  Проверяем восстановление
+    ASSERT_NE(back->getRoot(), nullptr);
+    EXPECT_EQ(back->getRoot()->getData(), "Человек?");
+}
+
+TEST(TreeSerializerTest, GetJsonKeys) {
+    TreeSerializer s;
+    std::string jsonStr = R"({"root":{},"count":1,"serializedAT":123})";
+
+    auto keys = s.getKeys(jsonStr);
+
+
+    EXPECT_EQ(keys.size(), 3);
+    EXPECT_NE(std::find(keys.begin(), keys.end(), "root"), keys.end());
+    EXPECT_NE(std::find(keys.begin(), keys.end(), "count"), keys.end());
+    EXPECT_NE(std::find(keys.begin(), keys.end(), "serializedAT"), keys.end());
+}
