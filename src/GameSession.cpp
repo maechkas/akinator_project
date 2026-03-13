@@ -20,14 +20,14 @@ std::string GameSession::getCurrentQuestion() const {
         throw GameException("the game is not active right now, but if you want to play, you can start it");
     }
 
-    const auto* current = tree_.getCurrentNode();  // метод Ангелины
+    const auto* current = tree_.getCurrentNode();
 
     if (!current) {
         throw GameException("there is no node((");
     }
 
     if (current->isAnswer()) {
-        return "the gods whispered to me, you were thinking about: " + current->getData() + ", write 'yes' if I'm right, and 'no' if I'm wrong";
+        return "Is it " + current->getData() + "? (yes/no)";
     }
     else {
         return current->getData();
@@ -42,7 +42,7 @@ void GameSession::processAnswer(bool answer) {
     questions_asked_++;
 
     if (questions_asked_ > MAX_QUESTIONS) {
-        throw GameException("the actor is burned out, we'll play later");
+        throw GameException("the Acinator is burned out, we'll play later");
     }
 
     if (answer == true) {
@@ -66,8 +66,8 @@ bool GameSession::checkGuess() {
     if (!tree_.isCurrentNodeAnswer()) {
         return false;
     }
-    std::string answer = tree_.getCurrentNode()->getData();  // предположение
-    std::cout << "the gods whispered to me, you were thinking about: " + answer + ", write 'yes' if I'm right, and 'no' if I'm wrong";
+    std::string answer = tree_.getCurrentNode()->getData();
+    std::cout << "the gods whispered to me, you were thinking about: " << answer << ", write 'yes' if I'm right, and 'no' if I'm wrong";
     std::string userInput;
     std::getline(std::cin, userInput);
     if (userInput == "да" || userInput == "д" || userInput == "yes" || userInput == "if" || userInput == "ye" || userInput == "дп" ) {
@@ -89,16 +89,19 @@ void GameSession::learnMode(){
     std::string newObject;
     std::getline(std::cin, newObject);
 
-    std::cout << "what question (with a yes/no answer) did I need to ask to distinguish " + newObject + " from " + oldAnswer +"? ";
+
+    std::cout << "what question (with a yes/no answer) did I need to ask\n";
+    std::cout << "to distinguish " << newObject << " from " << oldAnswer << "? ";
     std::string newQuestion;
     std::getline(std::cin, newQuestion);
-    std::cout << "for " + newObject + " the answer is 'yes' or 'no'? ";
+
+    std::cout << "for " << newObject << " the answer is 'yes' or 'no'? ";
     std::string answer;
     std::getline(std::cin, answer);
 
     bool answerForNew = (answer == "да" || answer == "д" || answer == "yes" || answer == "if" || answer == "ye" || answer == "дп" );
     tree_.learnNewObject(newObject, newQuestion, answerForNew);
-    std::cout << "Thank you, O wise man/woman! Now I know about " + newObject +"!" << std::endl;
+    std::cout << "Thank you, O wise man/woman! Now I know about " << newObject << "!" << std::endl;
 }
 
 //игрок сдался
