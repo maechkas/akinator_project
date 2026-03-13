@@ -49,6 +49,7 @@ add_executable(akinator_tests
         tests/TestNode.cpp
         tests/test_gamesession.cpp
         tests/test_player.cpp
+        tests/test_filehandler.cpp
 
 )
 target_link_libraries(akinator_tests PRIVATE
