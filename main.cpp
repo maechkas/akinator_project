@@ -11,52 +11,49 @@
 int main() {
     try {
         std::cout << "╔════════════════════════════════╗\n";
-        std::cout << "║         АКИНАТОР v1.0          ║\n";
-        std::cout << "║     Отгадай, что я загадал!    ║\n";
+        std::cout << "║          🌟AKINATOR 🌟         ║\n";
+        std::cout << "║   the best game in your life   ║\n";
         std::cout << "╚════════════════════════════════╝\n\n";
 
-        // ========== ИНИЦИАЛИЗАЦИЯ ==========
-        // Создаём дерево знаний
+        // создаём дерево знаний
         auto tree = std::make_unique<KnowledgeTree>();
 
-        // Создаём или загружаем игрока
-        std::cout << "Введите ваше имя: ";
+        // создаём или загружаем игрока
+        std::cout << "Your name: ";
         std::string playerName;
         std::getline(std::cin, playerName);
 
         auto player = std::make_shared<Player>(playerName);
 
-        // Пытаемся загрузить статистику игрока
+        // пытаемся загрузить статистику игрока
         std::string statsFile = playerName + "_stats.txt";
         try {
             player->loadFromFile(statsFile);
-            std::cout << "Статистика загружена! С возвращением, " << playerName << "!\n";
+            std::cout << "Statistics loaded! Welcome back, " << playerName << "!\n";
         } catch (const std::exception& e) {
-            std::cout << "Новый игрок! Добро пожаловать, " << playerName << "!\n";
+            std::cout << "A new player! Welcome, dear " << playerName << "!\n";
         }
 
-        // ========== ОСНОВНОЙ ИГРОВОЙ ЦИКЛ ==========
+//      начинаем игровой цикл
         bool playAgain = true;
 
         while (playAgain) {
-            // Создаём игровую сессию
             GameSession session(*tree, player);
 
-            std::cout << "\n--- НОВАЯ ИГРА ---\n";
+            std::cout << "\n--- A NEW GAME ---\n";
 
-            // Игровой цикл - пока не дойдём до ответа
+            // цикл - пока не дойдём до ответа
             while (!session.isGameFinished()) {
                 try {
-                    // Получаем и показываем вопрос/предположение
-                    std::cout << "\nАкинатор: " << session.getCurrentQuestion() << "\n";
+                    std::cout << "\nAKINATOR: " << session.getCurrentQuestion() << "\n";
 
                     // Получаем ответ от игрока
-                    std::cout << "Вы (да/нет/сдаться): ";
+                    std::cout << "Your answer(yes/no/give up): ";
                     std::string input;
                     std::getline(std::cin, input);
 
                     // Проверка на сдачу
-                    if (input == "сдаться" || input == "сдаюсь" || input == "сдать") {
+                    if (input == "сдаться" || input == "сдаюсь" || input == "give up") {
                         session.surrender();
                         break;
                     }
@@ -66,18 +63,17 @@ int main() {
                     session.processAnswer(answer);
 
                 } catch (const GameSession::GameException& e) {
-                    std::cout << "Ошибка в игре: " << e.what() << "\n";
+                    std::cout << "game error: " << e.what() << "\n";
                     break;
                 }
             }
 
-            // Проверяем результат игры (если не сдались)
-            if (session.isGameFinished() && !session.getCurrentQuestion().empty()) {
+            if (session.isGameFinished()) {
                 std::cout << "\n";
                 if (session.checkGuess()) {
-                    std::cout << "🎉 Акинатор: Ура! Я снова угадал!\n";
+                    std::cout << "🎉AKINATOR: Hooray! I got it again!🎉🎉🎉\n";
                 } else {
-                    std::cout << "🤔 Акинатор: Теперь я стал умнее!\n";
+                    std::cout << "AKINATOR: I've become smarter now!🤔🤔🤔\n";
                 }
             }
 
@@ -86,37 +82,36 @@ int main() {
             player->printStats();
 
             // Спрашиваем, хочет ли игрок продолжать
-            std::cout << "\nСыграем ещё? (да/нет): ";
+            std::cout << "\nShall we play again? (yes/no): ";
             std::string again;
             std::getline(std::cin, again);
             playAgain = (again == "да" || again == "yes" || again == "д" || again == "y");
         }
 
-        // ========== СОХРАНЕНИЕ ПЕРЕД ВЫХОДОМ ==========
+        // СОХРАНЕНИЕ ПЕРЕД ВЫХОДОМ
         try {
             player->saveToFile(statsFile);
-            std::cout << "Статистика сохранена. До свидания, " << playerName << "!\n";
+            std::cout << "Statistics saved. Goodbye, " << playerName << "!\n";
         } catch (const std::exception& e) {
-            std::cout << "Не удалось сохранить статистику: " << e.what() << "\n";
+            std::cout << "Couldn't save statistics: " << e.what() << "\n";
         }
 
-        // ========== СОХРАНЕНИЕ ДЕРЕВА ==========
+        //СОХРАНЕНИЕ ДЕРЕВА
         try {
             TreeSerializer serializer;
             std::string jsonTree = serializer.serialize(*tree);
 
             FileHandler fileHandler("saves");
             fileHandler.writeFile("knowledge_tree.json", jsonTree);
-            std::cout << "Дерево знаний сохранено.\n";
+            std::cout << "The tree of knowledge has been preserved.\n";
         } catch (const std::exception& e) {
-            std::cout << "Не удалось сохранить дерево: " << e.what() << "\n";
+            std::cout << "Couldn't save the tree: " << e.what() << "\n";
         }
 
     } catch (const std::exception& e) {
-        std::cerr << "\n❌ КРИТИЧЕСКАЯ ОШИБКА: " << e.what() << "\n";
+        std::cerr << "\n❌ CRITICAL ERROR: " << e.what() << "\n";
         return 1;
     }
 
-    std::cout << "\nДо новых встреч! 👋\n";
-    return 0;
+    std::cout << "\nSee you soon! 💗💗💗\n";
 }
