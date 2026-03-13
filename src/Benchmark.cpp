@@ -4,7 +4,8 @@
 #include "FileHandler.h"
 #include "KnowledgeTree.hpp"
 #include "EntitySearcher.h"
-#include "TreeSerializer.h"
+#include "tree_serializer.h"
+#include <memory>
 
 
 
@@ -16,7 +17,8 @@
     if (!content) {
         return -1;
     }
-    std::unique_ptr<KnowledgeTree> tree = TreeSerializer::deserialize(*content);
+    TreeSerializer serializer;
+    std::unique_ptr<KnowledgeTree> tree = serializer.deserialize(*content);
     auto end = std::chrono::steady_clock::now();
     double ms = std::chrono::duration <double, std::milli>(end-start).count();
     return ms;
