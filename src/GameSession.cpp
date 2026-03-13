@@ -17,17 +17,17 @@ void GameSession::startNewGame() {
 //-------ПОВЕДЕНИЕ АКТИНАТОРА------//
 std::string GameSession::getCurrentQuestion() const {
     if (!game_active_) {
-        throw GameException("сейчас игра не активна, хочешь сыграть - запусти");
+        throw GameException("the game is not active right now, but if you want to play, you can start it");
     }
 
     const auto* current = tree_.getCurrentNode();  // метод Ангелины
 
     if (!current) {
-        throw GameException("узла нет((");
+        throw GameException("there is no node((");
     }
 
     if (current->isAnswer()) {
-        return "боги нашептали мне, ты загадал: " + current->getData() + ", напиши 'да' - если я прав, 'нет' - если я ошибся";
+        return "the gods whispered to me, you were thinking about: " + current->getData() + ", write 'yes' if I'm right, and 'no' if I'm wrong";
     }
     else {
         return current->getData();
@@ -37,12 +37,12 @@ std::string GameSession::getCurrentQuestion() const {
 //-------ОБРАБОТКА ОТВЕТОВ ИГРОКА------//
 void GameSession::processAnswer(bool answer) {
     if (!game_active_) {
-        throw GameException("сейчас игра не активна, хочешь сыграть - запусти");
+        throw GameException("the game is not active right now, but if you want to play, you can start it");
     }
     questions_asked_++;
 
     if (questions_asked_ > MAX_QUESTIONS) {
-        throw GameException("у акинатора выгорание, сыграем позже");
+        throw GameException("the actor is burned out, we'll play later");
     }
 
     if (answer == true) {
@@ -67,7 +67,7 @@ bool GameSession::checkGuess() {
         return false;
     }
     std::string answer = tree_.getCurrentNode()->getData();  // предположение
-    std::cout << "боги нашептали мне, ты загадал: " + answer + ", напиши 'да' - если я прав, 'нет' - если я ошибся";
+    std::cout << "the gods whispered to me, you were thinking about: " + answer + ", write 'yes' if I'm right, and 'no' if I'm wrong";
     std::string userInput;
     std::getline(std::cin, userInput);
     if (userInput == "да" || userInput == "д" || userInput == "yes" || userInput == "if" || userInput == "ye" || userInput == "дп" ) {
@@ -75,7 +75,7 @@ bool GameSession::checkGuess() {
         return true;
     }
     else {
-        std::cout << "сдаюсь! прошу, поделись со мной своей мудростью";
+        std::cout << "I give up! Please share your wisdom with me ";
         learnMode();
         player_->lost();
         return false;
@@ -85,29 +85,29 @@ bool GameSession::checkGuess() {
 //обучение
 void GameSession::learnMode(){
     std::string oldAnswer = tree_.getCurrentNode()->getData();
-    std::cout << "поведай же, что было на твоем уме? ";
+    std::cout << "Tell me, what was on your mind? ";
     std::string newObject;
     std::getline(std::cin, newObject);
 
-    std::cout << "какой вопрос (с ответом да/нет) мне нужно было задать, чтобы отличить " + newObject + " от " + oldAnswer +"? ";
+    std::cout << "what question (with a yes/no answer) did I need to ask to distinguish " + newObject + " from " + oldAnswer +"? ";
     std::string newQuestion;
     std::getline(std::cin, newQuestion);
-    std::cout << "для " + newObject + " ответ 'да' или 'нет'? ";
+    std::cout << "for " + newObject + " the answer is 'yes' or 'no'? ";
     std::string answer;
     std::getline(std::cin, answer);
 
     bool answerForNew = (answer == "да" || answer == "д" || answer == "yes" || answer == "if" || answer == "ye" || answer == "дп" );
     tree_.learnNewObject(newObject, newQuestion, answerForNew);
-    std::cout << "спасибо тебе, о мудрый человек! теперь я знаю о " + newObject +"!" << std::endl;
+    std::cout << "Thank you, O wise man/woman! Now I know about " + newObject +"!" << std::endl;
 }
 
 //игрок сдался
 void GameSession::surrender() {
     if (!game_active_) {
-        std::cout << "сейчас игра не активна" << std::endl;
+        std::cout << "the game is not active right now" << std::endl;
         return;
     }
-    std::cout << "сдаешься? расскажи, что ты загадал(а)?" <<std::endl;
+    std::cout << "Are you giving up? Tell me, what were you thinking?" <<std::endl;
     learnMode();
     player_->lost();
     game_active_ = false;
