@@ -1,6 +1,3 @@
-//
-// Created by Maya on 10.03.2026.
-//
 
 #ifndef AKINATOR_PROJECTSS_TREE_SERIALIZER_H
 #define AKINATOR_PROJECTSS_TREE_SERIALIZER_H
@@ -27,7 +24,8 @@ public:
     std::unique_ptr<KnowledgeTree> LoadingFrom(const std::string& filename);
 private:
     nlohmann::json nodeTojson(QuestionNode* node);
-    std::unique_ptr <QuestionNode> jsonTonode(const nlohmann::json& j);
+    //  уточняем возвращаемый тип - unique_ptr<Node>
+    std::unique_ptr<Node> jsonTonode(const nlohmann::json& j);  // Возвращает unique_ptr с правильным типом узла
     bool validateNode(const nlohmann::json& j); //checking fields
     size_t countNode(const nlohmann::json& j);
     static constexpr const char* KEY_DATA = "data";
@@ -36,10 +34,6 @@ private:
     static constexpr const char* KEY_NO = "no";
     static constexpr int JSON_INDENT = 4;
 
-
 };
-
-
-
 
 #endif //AKINATOR_PROJECTSS_TREE_SERIALIZER_H
