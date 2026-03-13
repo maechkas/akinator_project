@@ -58,7 +58,6 @@ void collectObjectsHelper(const Node* node, std::vector<std::string>& objects){
     if (!node){
         return;
     }
-
     if (node->isAnswer()){
         objects.push_back(node->getData());
     }
