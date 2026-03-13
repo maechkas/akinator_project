@@ -7,7 +7,7 @@
 
 #include "Player.h"
 #include "KnowledgeTree.hpp"
-#include <memory> //умные указатели
+#include <memory>
 #include <iostream>
 #include <string>
 
@@ -15,27 +15,27 @@ class GameSession {
 private:
     KnowledgeTree& tree_; //ссылка на дерево которое создавала ангелина
     std::shared_ptr<Player> player_;
-    int questions_asked_{0};  // сколько задано было вопросов
-    bool game_active_{false}; // активна ли игра
+    int questions_asked_{0};
+    bool game_active_{false};
 
 
     // Константы времени компиляции (constexpr!)
-    constexpr static int MAX_QUESTIONS = 50;   // максимум вопросов за игру
-    constexpr static int WIN_SCORE = 1;        // очки за победу
+    constexpr static int MAX_QUESTIONS = 50;
+    constexpr static int WIN_SCORE = 1;
 
 public:
     GameSession(KnowledgeTree& tree, std::shared_ptr<Player> player);
 
     //основные методы
-    void startNewGame();  //начать новую игру
-    std::string getCurrentQuestion() const; //получить вопрос который акинатор задал
-    void processAnswer(bool answer); //обработка ответа на вопрос - да или нет
-    bool isGameFinished() const;    //закончена ли игра
+    void startNewGame();
+    std::string getCurrentQuestion() const;
+    void processAnswer(bool answer);
+    bool isGameFinished() const;
 
     //проверка и обучение
-    bool checkGuess(); //проверка угадал ли акинатор
-    void learnMode(); //если не угадал - режим обучения
-    void surrender(); //сдаться и сразу учиться
+    bool checkGuess();
+    void learnMode();
+    void surrender();
 
     int amountOfQuestionsAsked() const {return questions_asked_;}
     std::shared_ptr<Player> getPlayer() const {return player_;}
