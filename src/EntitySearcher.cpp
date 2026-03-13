@@ -22,13 +22,13 @@ void findPathsHelper(const Node* node, const std::string& target,
     else{
 
         if (node->hasYesBranch()){
-            currentPath.push_back("YES");
+            currentPath.push_back("Yes");
             findPathsHelper(node->getYesBranch(), target, currentPath, allPaths);
             currentPath.pop_back();
         }
 
         if (node->hasNoBranch()){
-            currentPath.push_back("NO");
+            currentPath.push_back("No");
             findPathsHelper(node->getNoBranch(), target, currentPath, allPaths);
             currentPath.pop_back();
         }
