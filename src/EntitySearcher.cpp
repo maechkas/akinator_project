@@ -1,5 +1,8 @@
 #include "Node.hpp"
 #include "EntitySearcher.h"
+#include <vector>
+#include <string>
+#include <cstddef>
 
 // вспомогательная рекурсивная функция, которая ищет путь от узла, до нужного объекта
 void findPathsHelper(const Node* node, const std::string& target,
@@ -32,7 +35,7 @@ void findPathsHelper(const Node* node, const std::string& target,
     }
     currentPath.pop_back();
 
-    }
+}
 
 // метод findAllPathsToObject (находит все пути к объекту)
 std::vector<std::vector<std::string>> EntitySearcher::findAllPathsToObject(const Node* root, const std::string& objectName){
@@ -80,6 +83,9 @@ std::vector<std::string> EntitySearcher::getAllObjects(const Node* root){
 
 // метод findObjectByAnswers (ищет объект по ответам пользователя)
 std::optional<std::string> EntitySearcher::findObjectByAnswers(const Node* root, const std::vector<bool>& answers){
+    if (!root){
+        return std::nullopt;
+    }
     const Node* current = root;
     for (size_t i=0; i<answers.size(); ++i){
         const bool answer=answers[i];
