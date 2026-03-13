@@ -52,6 +52,3 @@ TEST(GameSessionTest, ProcessNoAnswer) {
     });
     EXPECT_GT(session.getQuestionsAsked(), 0);
 }
-
-
-

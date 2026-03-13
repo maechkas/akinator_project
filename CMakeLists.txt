@@ -12,13 +12,14 @@ FetchContent_Declare(json
 )
 FetchContent_MakeAvailable(json)
 
-# GTest (вместо find_package)
+# GTest
 FetchContent_Declare(googletest
         GIT_REPOSITORY https://github.com/google/googletest.git
         GIT_TAG v1.14.0
 )
 FetchContent_MakeAvailable(googletest)
 
+# Библиотека
 add_library(akinator_lib
         src/Node.cpp
         src/QuestionNode.cpp
@@ -35,20 +36,27 @@ add_library(akinator_lib
 target_include_directories(akinator_lib PUBLIC include)
 target_link_libraries(akinator_lib PRIVATE nlohmann_json::nlohmann_json)
 
+# Основная программа
 add_executable(akinator main.cpp)
 target_link_libraries(akinator PRIVATE akinator_lib nlohmann_json::nlohmann_json)
 
+# ТЕСТЫ — ТОЛЬКО ОДИН РАЗ!
 enable_testing()
-
 add_executable(akinator_tests
         tests/test_entity_searcher.cpp
         tests/test_tree_serializer.cpp
+        tests/TestKnowledgeTree.cpp
+        tests/TestNode.cpp
+        tests/test_gamesession.cpp
+        tests/test_player.cpp
+        tests/test_filehandler.cpp
+
 )
 target_link_libraries(akinator_tests PRIVATE
         akinator_lib
         gtest
         gtest_main
+        nlohmann_json::nlohmann_json
 )
 target_include_directories(akinator_tests PRIVATE include)
-
 add_test(NAME akinator_tests COMMAND akinator_tests)
