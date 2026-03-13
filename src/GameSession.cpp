@@ -42,7 +42,7 @@ void GameSession::processAnswer(bool answer) {
     questions_asked_++;
 
     if (questions_asked_ > MAX_QUESTIONS) {
-        throw GameException("the actor is burned out, we'll play later");
+        throw GameException("the Acinator is burned out, we'll play later");
     }
 
     if (answer == true) {
