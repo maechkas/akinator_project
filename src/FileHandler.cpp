@@ -1,9 +1,6 @@
 //
 // Created by Ангелина Радаева on 12.03.2026.
-//
-//
 // Created by Maya on 02.03.2026.
-//
 
 #include "FileHandler.h"
 
