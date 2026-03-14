@@ -37,7 +37,8 @@ target_include_directories(akinator_lib PUBLIC include)
 target_link_libraries(akinator_lib PRIVATE nlohmann_json::nlohmann_json)
 
 # Основная программа
-add_executable(akinator main.cpp)
+add_executable(akinator main.cpp
+        include/colours.h)
 target_link_libraries(akinator PRIVATE akinator_lib nlohmann_json::nlohmann_json)
 
 # ТЕСТЫ — ТОЛЬКО ОДИН РАЗ!
