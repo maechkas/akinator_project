@@ -11,7 +11,7 @@ TEST(GameSessionTest, CreateSession) {
 
     GameSession session(tree, player);
 
-    EXPECT_EQ(session.getQuestionsAsked(), 0);
+    EXPECT_EQ(session.amountOfQuestionsAsked(), 0);
     EXPECT_FALSE(session.isGameFinished());
 }
 
@@ -37,7 +37,7 @@ TEST(GameSessionTest, ProcessYesAnswer) {
     EXPECT_NO_THROW({
         session.processAnswer(true);
     });
-    EXPECT_GT(session.getQuestionsAsked(), 0);
+    EXPECT_GT(session.amountOfQuestionsAsked(), 0);
 }
 
 // ТЕСТ 5 - обработка ответа нет
@@ -50,8 +50,5 @@ TEST(GameSessionTest, ProcessNoAnswer) {
     EXPECT_NO_THROW({
         session.processAnswer(false);
     });
-    EXPECT_GT(session.getQuestionsAsked(), 0);
+    EXPECT_GT(session.amountOfQuestionsAsked(), 0);
 }
-
-
-

@@ -1,0 +1,1 @@
+/usr/bin/c++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/akinator_tests.dir/tests/test_entity_searcher.cpp.o CMakeFiles/akinator_tests.dir/tests/test_tree_serializer.cpp.o -o akinator_tests  libakinator_lib.a lib/libgtest.a lib/libgtest_main.a lib/libgtest.a
