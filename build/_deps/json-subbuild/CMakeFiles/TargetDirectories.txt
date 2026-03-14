@@ -1,0 +1,3 @@
+/Users/soonserv/CLionProjects/akinator_project/build/_deps/json-subbuild/CMakeFiles/json-populate.dir
+/Users/soonserv/CLionProjects/akinator_project/build/_deps/json-subbuild/CMakeFiles/edit_cache.dir
+/Users/soonserv/CLionProjects/akinator_project/build/_deps/json-subbuild/CMakeFiles/rebuild_cache.dir
