@@ -50,5 +50,5 @@ TEST(GameSessionTest, ProcessNoAnswer) {
     EXPECT_NO_THROW({
         session.processAnswer(false);
     });
-    EXPECT_GT(session.amountOfQuestionsAsked(), 0);
+    EXPECT_GT(session.getQuestionsAsked(), 0);
 }
