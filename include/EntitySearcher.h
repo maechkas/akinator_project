@@ -1,7 +1,3 @@
-//
-// Created by Анастасия on 08.03.2026.
-//
-
 #pragma once
 
 #include <vector>
