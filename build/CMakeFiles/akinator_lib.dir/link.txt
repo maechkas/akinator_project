@@ -1,0 +1,2 @@
+/usr/bin/ar qc libakinator_lib.a CMakeFiles/akinator_lib.dir/src/Node.cpp.o CMakeFiles/akinator_lib.dir/src/QuestionNode.cpp.o CMakeFiles/akinator_lib.dir/src/AnswerNode.cpp.o CMakeFiles/akinator_lib.dir/src/KnowledgeTree.cpp.o CMakeFiles/akinator_lib.dir/src/Benchmark.cpp.o CMakeFiles/akinator_lib.dir/src/EntitySearcher.cpp.o CMakeFiles/akinator_lib.dir/src/GameSession.cpp.o CMakeFiles/akinator_lib.dir/src/Player.cpp.o CMakeFiles/akinator_lib.dir/src/tree_serializer.cpp.o CMakeFiles/akinator_lib.dir/src/FileHandler.cpp.o
+/usr/bin/ranlib libakinator_lib.a

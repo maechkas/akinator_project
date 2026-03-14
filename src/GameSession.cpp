@@ -18,7 +18,7 @@ void GameSession::startNewGame() {
 // ========== GET CURRENT QUESTION ==========
 std::string GameSession::getCurrentQuestion() const {
     if (!game_active_) {
-        throw GameException("Game is not active. Please start a new game.");
+        return "";
     }
 
     const auto* current = tree_.getCurrentNode();
@@ -50,7 +50,8 @@ void GameSession::processAnswer(bool answer) {
         tree_.moveNo();
     }
 
-    if (tree_.isCurrentNodeAnswer()) {
+    const auto* current = tree_.getCurrentNode();
+    if (!current || current->isAnswer()) {
         game_active_ = false;
     }
 }
