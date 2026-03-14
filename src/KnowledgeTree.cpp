@@ -95,55 +95,62 @@ Node* KnowledgeTree::getCurrentNode() const {
     return currentNode_;
 }
 
-void KnowledgeTree::learnNewObject(const std::string& newObject,const std::string& newQuestion,bool answerForNew) {
+void KnowledgeTree::learnNewObject(const std::string& newObject, const std::string& newQuestion, bool answerForNew) {
     if (!currentNode_ || !(currentNode_->isAnswer())) {
         throw std::runtime_error("Not answer or no current node");
     }
+
+    std::string oldObject = currentNode_->getData();
+    Node* parent = currentNode_->getParent();
+    Node* oldNodePtr = currentNode_;
+
+    bool isRootNode = (parent == nullptr);
+
+    auto newQuestionNode = std::make_unique<QuestionNode>(newQuestion);
+    Node* newQuestionPtr = newQuestionNode.get();
+
+    auto oldAnswerNode = std::make_unique<AnswerNode>(oldObject);
+    auto newAnswerNode = std::make_unique<AnswerNode>(newObject);
+
+    if (answerForNew) {
+        newQuestionNode->setYesBranch(std::move(newAnswerNode));
+        newQuestionNode->setNoBranch(std::move(oldAnswerNode));
+    } else {
+        newQuestionNode->setYesBranch(std::move(oldAnswerNode));
+        newQuestionNode->setNoBranch(std::move(newAnswerNode));
+    }
+
+    if (isRootNode) {
+        root_ = std::move(newQuestionNode);
+        currentNode_ = root_.get();
+    }
     else {
-        std::string oldObject = currentNode_->getData();
-        Node* parent = currentNode_->getParent();
-
-        std::unique_ptr<QuestionNode>newQuestionNode = std::make_unique<QuestionNode>(newQuestion);
-        auto oldAnswerNode = std::make_unique<AnswerNode>(oldObject);
-        auto newAnswerNode = std::make_unique<AnswerNode>(newObject);
-
-        if (answerForNew) {
-            newQuestionNode->setYesBranch(std::move(newAnswerNode));
-            newQuestionNode->setNoBranch(std::move(oldAnswerNode));
-        } else {
-            newQuestionNode->setYesBranch(std::move(oldAnswerNode));
-            newQuestionNode->setNoBranch(std::move(newAnswerNode));
+        QuestionNode* parentQuestion = dynamic_cast<QuestionNode*>(parent);
+        if (!parentQuestion) {
+            throw std::runtime_error("Parent must be a question node");
         }
-        if (!parent) {
-            root_ = std::move(newQuestionNode);
-            currentNode_ = root_.get();
+
+        if (parentQuestion->getYesBranch() == oldNodePtr) {
+            parentQuestion->releaseYesBranch();
+            parentQuestion->setYesBranch(std::move(newQuestionNode));
+        }
+        else if (parentQuestion->getNoBranch() == oldNodePtr) {
+            parentQuestion->releaseNoBranch();
+            parentQuestion->setNoBranch(std::move(newQuestionNode));
         }
         else {
-            QuestionNode* parentQuestion = dynamic_cast<QuestionNode*>(parent);
-            if (!parentQuestion) {
-                throw std::runtime_error("Parent must be a question node");
-            }
-            if (parentQuestion->getYesBranch() == currentNode_) {
-                parentQuestion->releaseYesBranch();
-                parentQuestion->setYesBranch(std::move(newQuestionNode));
-            }
-            else if (parentQuestion->getNoBranch() == currentNode_) {
-                parentQuestion->releaseNoBranch();
-                parentQuestion->setNoBranch(std::move(newQuestionNode));
-            }
-            else {
-                throw std::runtime_error("Current node not found in parent's branches");
-            }
-            currentNode_ = newQuestionNode.get();
+            throw std::runtime_error("Current node not found in parent's branches");
         }
-        nodeCount_ += 2;
+        currentNode_ = newQuestionPtr;
     }
+
+    nodeCount_ += 2;
 }
-void KnowledgeTree::buildFromJson(Node* newRoot) {
+void KnowledgeTree::buildFromJson(std::unique_ptr<Node> newRoot){
     if (!newRoot) {
         throw std::runtime_error("Cannot build from null root");
     }
-    root_.reset(newRoot);
+    root_ = std::move(newRoot);
     currentNode_ = root_.get();
     nodeCount_ = calculateNodeCount(root_.get());
 }
