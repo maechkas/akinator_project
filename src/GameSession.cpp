@@ -2,53 +2,51 @@
 #include "GameSession.h"
 #include <string>
 
-GameSession::GameSession(KnowledgeTree& tree, std::shared_ptr<Player> player):
-tree_(tree), player_(std::move(player)) {
+// ========== CONSTRUCTOR ==========
+GameSession::GameSession(KnowledgeTree& tree, std::shared_ptr<Player> player)
+    : tree_(tree), player_(std::move(player)) {
     startNewGame();
 }
 
+// ========== START NEW GAME ==========
 void GameSession::startNewGame() {
     tree_.resetGame();
-    questions_asked_= 0;
+    questions_asked_ = 0;
     game_active_ = true;
-    player_->incrementGamesPlayed();
 }
 
-//-------ПОВЕДЕНИЕ АКТИНАТОРА------//
+// ========== GET CURRENT QUESTION ==========
 std::string GameSession::getCurrentQuestion() const {
     if (!game_active_) {
         return "";
     }
 
     const auto* current = tree_.getCurrentNode();
-
     if (!current) {
-        throw GameException("there is no node((");
+        throw GameException("Error: Current node is null.");
     }
 
     if (current->isAnswer()) {
-        return "Is it " + current->getData() + "? (yes/no)";
-    }
-    else {
-        return current->getData();
+        return "Is it \"" + current->getData() + "\"? (yes/no)";
+    } else {
+        return current->getData() + "? (yes/no)";
     }
 }
 
-//-------ОБРАБОТКА ОТВЕТОВ ИГРОКА------//
+// ========== PROCESS PLAYER ANSWER ==========
 void GameSession::processAnswer(bool answer) {
     if (!game_active_) {
-        throw GameException("the game is not active right now, but if you want to play, you can start it");
+        throw GameException("Game is not active. Please start a new game.");
     }
+
     questions_asked_++;
-
     if (questions_asked_ > MAX_QUESTIONS) {
-        throw GameException("the Acinator is burned out, we'll play later");
+        throw GameException("Too many questions. Game over.");
     }
 
-    if (answer == true) {
+    if (answer) {
         tree_.moveYes();
-    }
-    else {
+    } else {
         tree_.moveNo();
     }
 
@@ -58,60 +56,67 @@ void GameSession::processAnswer(bool answer) {
     }
 }
 
+// ========== IS GAME FINISHED ==========
 bool GameSession::isGameFinished() const {
     return !game_active_;
 }
 
-//акинатор дошел до предположения
+// ========== CHECK GUESS ==========
 bool GameSession::checkGuess() {
     if (!tree_.isCurrentNodeAnswer()) {
         return false;
     }
+
     std::string answer = tree_.getCurrentNode()->getData();
-    std::cout << "the gods whispered to me, you were thinking about: " << answer << ", write 'yes' if I'm right, and 'no' if I'm wrong";
+    std::cout << "\n🤔 Akinator thinks: Is it \"" << answer << "\"? (yes/no): ";
+
     std::string userInput;
     std::getline(std::cin, userInput);
-    if (userInput == "да" || userInput == "д" || userInput == "yes" || userInput == "if" || userInput == "ye" || userInput == "дп" ) {
+
+    // ✅ Fixed: proper OR operators
+    if (userInput == "yes" || userInput == "y" ||
+        userInput == "да" || userInput == "д") {
         player_->won();
+        std::cout << "🎉 AKINATOR WINS!\n";
         return true;
-    }
-    else {
-        std::cout << "I give up! Please share your wisdom with me ";
+    } else {
+        std::cout << "😢 Missed! Teach me...\n";
         learnMode();
         player_->lost();
         return false;
     }
 }
 
-//обучение
-void GameSession::learnMode(){
+// ========== LEARNING MODE ==========
+void GameSession::learnMode() {
     std::string oldAnswer = tree_.getCurrentNode()->getData();
-    std::cout << "Tell me, what was on your mind? ";
+    std::cout << "What did you think of? ";
     std::string newObject;
     std::getline(std::cin, newObject);
 
-
-    std::cout << "what question (with a yes/no answer) did I need to ask\n";
-    std::cout << "to distinguish " << newObject << " from " << oldAnswer << "? ";
+    std::cout << "Question to distinguish " << newObject << " from " << oldAnswer << "? ";
     std::string newQuestion;
     std::getline(std::cin, newQuestion);
 
-    std::cout << "for " << newObject << " the answer is 'yes' or 'no'? ";
-    std::string answer;
-    std::getline(std::cin, answer);
+    std::cout << "'" << newObject << "' answer is 'yes'? (yes/no) ";
+    std::string response;
+    std::getline(std::cin, response);
 
-    bool answerForNew = (answer == "да" || answer == "д" || answer == "yes" || answer == "if" || answer == "ye" || answer == "дп" );
+    // ✅ Fixed: proper OR operators
+    bool answerForNew = (response == "yes" || response == "y" ||
+                        response == "да" || response == "д");
+
     tree_.learnNewObject(newObject, newQuestion, answerForNew);
-    std::cout << "Thank you, O wise man/woman! Now I know about " << newObject << "!" << std::endl;
+    std::cout << "✅ Learned! Tree updated!\n";
 }
 
-//игрок сдался
+// ========== SURRENDER ==========
 void GameSession::surrender() {
     if (!game_active_) {
-        std::cout << "the game is not active right now" << std::endl;
+        std::cout << "Game not active.\n";
         return;
     }
-    std::cout << "Are you giving up? Tell me, what were you thinking?" <<std::endl;
+    std::cout << "Giving up? Teach me!\n";
     learnMode();
     player_->lost();
     game_active_ = false;

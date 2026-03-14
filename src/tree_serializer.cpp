@@ -1,63 +1,89 @@
 #include "tree_serializer.h"
 #include <fstream>
-
 #include "KnowledgeTree.hpp"
-
 #include <iostream>
 #include <string>
+
+
 using json = nlohmann::json;
-//public methods
-std::string TreeSerializer::serialize(const KnowledgeTree &tree) {
+
+// Вспомогательная рекурсивная функция для конвертации Node в JSON
+json TreeSerializer::nodeToJsonHelper(const Node* node) {
+    if (!node) return nullptr;
+
+    json j;
+    j[KEY_DATA] = node->getData();
+    j[KEY_IS_ANSWER] = node->isAnswer();
+
+    if (!node->isAnswer()) {
+        // Это QuestionNode, у него есть ветки
+        if (node->hasYesBranch()) {
+            j[KEY_YES] = nodeToJsonHelper(node->getYesBranch());
+        }
+        if (node->hasNoBranch()) {
+            j[KEY_NO] = nodeToJsonHelper(node->getNoBranch());
+        }
+    }
+
+    return j;
+}
+
+// Публичные методы
+std::string TreeSerializer::serialize(const KnowledgeTree& tree) {
     try {
         Node* rootNode = tree.getRoot();
         if (!rootNode) {
             throw std::runtime_error("Tree is empty");
         }
-        QuestionNode* root = dynamic_cast<QuestionNode*>(rootNode);
-        if (!root) {
-            throw std::runtime_error("Root is not QuestionNode");
-        }
-        nlohmann::json j;
-        j["root"] = nodeTojson(root);
+
+        json j;
+        j["root"] = nodeToJsonHelper(rootNode);
         j["count"] = countNode(j["root"]);
-        j["serializedAT"] = std::time(nullptr);
-        return j.dump(4);
+        j["serializedAt"] = std::time(nullptr);
+
+        return j.dump(JSON_INDENT);
     } catch (const std::exception& e) {
         std::cerr << "Error in serialization: " << e.what() << "\n";
         throw;
     }
 }
 
-std::unique_ptr<KnowledgeTree> TreeSerializer::deserialize(const std::string &jsonstr) {
+std::unique_ptr<KnowledgeTree> TreeSerializer::deserialize(const std::string& jsonstr) {
     try {
         json j = json::parse(jsonstr);
+
+        // Валидация
         if (!validate(jsonstr)) {
             throw std::runtime_error("Validation failed");
         }
+
+        // Получаем корневой узел (может быть в поле "root" или прямо объект)
         json rootJson = j.contains("root") ? j["root"] : j;
 
-        auto root = jsonTonode(rootJson);  // unique_ptr<Node>
+        // Рекурсивно восстанавливаем дерево
+        auto root = jsonTonode(rootJson);
 
+        // Создаём дерево и устанавливаем корень
         auto tree = std::make_unique<KnowledgeTree>();
-        // ИСПРАВЛЕНО: передаём unique_ptr через std::move
-        tree->buildFromJson(std::move(root));  // ✅ больше не release()!
+        tree->buildFromJson(std::move(root));
 
         return tree;
-    }
-    catch (const json::parse_error& e) {
+    } catch (const json::parse_error& e) {
         throw std::runtime_error("JSON parse error: " + std::string(e.what()));
-    }
-    catch (const std::exception& e) {
+    } catch (const std::exception& e) {
         std::cerr << "Deserialize error: " << e.what() << "\n";
         throw;
     }
 }
+
 bool TreeSerializer::validate(const std::string& jsonString) {
     try {
         json j = json::parse(jsonString);
         json rootJson = j.contains("root") ? j["root"] : j;
         return validateNode(rootJson);
-    } catch (...) { return false; }
+    } catch (...) {
+        return false;
+    }
 }
 
 std::vector<std::string> TreeSerializer::getKeys(const std::string& jsonString) {
@@ -74,30 +100,50 @@ std::vector<std::string> TreeSerializer::getKeys(const std::string& jsonString) 
 bool TreeSerializer::SaveTo(const KnowledgeTree& tree, const std::string& filename) {
     try {
         std::ofstream file(filename);
-        if (!file.is_open()) return false;
+        if (!file.is_open()) {
+            std::cerr << "Cannot open file for writing: " << filename << std::endl;
+            return false;
+        }
         file << serialize(tree);
-        std::cout << "Tree saved: " << filename << std::endl;
+        std::cout << "Tree saved to: " << filename << std::endl;
         return true;
-    } catch (...) { return false; }
+    } catch (const std::exception& e) {
+        std::cerr << "Save error: " << e.what() << std::endl;
+        return false;
+    }
 }
 
 std::unique_ptr<KnowledgeTree> TreeSerializer::LoadingFrom(const std::string& filename) {
     try {
         std::ifstream file(filename);
-        if (!file.is_open()) return nullptr;
+        if (!file.is_open()) {
+            std::cerr << "Cannot open file for reading: " << filename << std::endl;
+            return nullptr;
+        }
+
         std::string jsonString((std::istreambuf_iterator<char>(file)),
                                std::istreambuf_iterator<char>());
+
+        if (jsonString.empty()) {
+            std::cerr << "File is empty: " << filename << std::endl;
+            return nullptr;
+        }
+
         return deserialize(jsonString);
-    } catch (...) { return nullptr; }
+    } catch (const std::exception& e) {
+        std::cerr << "Loading error: " << e.what() << std::endl;
+        return nullptr;
+    }
 }
 
 std::unique_ptr<Node> TreeSerializer::jsonTonode(const nlohmann::json& j) {
-    if (!j.contains("data") || !j.contains("isAnswer")) {
+    // ✅ ИСПРАВЛЕНО: добавлены ||
+    if (!j.contains(KEY_DATA) || !j.contains(KEY_IS_ANSWER)) {
         throw std::runtime_error("jsonTonode: missing required fields");
     }
 
-    std::string data = j.at("data").get<std::string>();
-    bool isAnswer = j.at("isAnswer").get<bool>();
+    std::string data = j.at(KEY_DATA).get<std::string>();
+    bool isAnswer = j.at(KEY_IS_ANSWER).get<bool>();
 
     std::unique_ptr<Node> node;
 
@@ -109,90 +155,64 @@ std::unique_ptr<Node> TreeSerializer::jsonTonode(const nlohmann::json& j) {
 
     // Рекурсивно восстанавливаем дерево
     if (!isAnswer) {
-        QuestionNode* qnode = static_cast<QuestionNode*>(node.get());
-
-        if (j.contains("yes") && !j["yes"].is_null()) {
-            auto yesNode = jsonTonode(j["yes"]);
-            // ИСПРАВЛЕНО: передаём unique_ptr через std::move
-            qnode->setYesBranch(std::move(yesNode));  // ✅ больше не release()!
-        }
-        if (j.contains("no") && !j["no"].is_null()) {
-            auto noNode = jsonTonode(j["no"]);
-            // ИСПРАВЛЕНО: передаём unique_ptr через std::move
-            qnode->setNoBranch(std::move(noNode));    // ✅ больше не release()!
-        }
-    }
-
-    return node;  // возвращаем unique_ptr (RVO сработает)
-}
-
-nlohmann::json TreeSerializer::nodeTojson(QuestionNode* node) {
-    if (!node) throw std::runtime_error("nodeToJson: nullptr");
-    json j;
-    j["data"] = node->getData();
-    j["isAnswer"] = node->isAnswer();
-
-    if (!node->isAnswer()) {
-        // ИСПРАВЛЕНО: проверяем и кастуем для рекурсивного вызова
-        Node* yesBranch = node->getYesBranch();
-        if (yesBranch) {
-            QuestionNode* yes = dynamic_cast<QuestionNode*>(yesBranch);
-            if (yes) {
-                j["yes"] = nodeTojson(yes);
-            }
+        QuestionNode* qnode = dynamic_cast<QuestionNode*>(node.get());
+        if (!qnode) {
+            throw std::runtime_error("Failed to cast to QuestionNode");
         }
 
-        Node* noBranch = node->getNoBranch();
-        if (noBranch) {
-            QuestionNode* no = dynamic_cast<QuestionNode*>(noBranch);
-            if (no) {
-                j["no"] = nodeTojson(no);
-            }
+        if (j.contains(KEY_YES) && !j[KEY_YES].is_null()) {
+            auto yesNode = jsonTonode(j[KEY_YES]);
+            qnode->setYesBranch(std::move(yesNode));
+        }
+
+        if (j.contains(KEY_NO) && !j[KEY_NO].is_null()) {
+            auto noNode = jsonTonode(j[KEY_NO]);
+            qnode->setNoBranch(std::move(noNode));
         }
     }
-    return j;
+
+    return node;
 }
 
 bool TreeSerializer::validateNode(const json& j) {
-    if (!j.is_object() || !j.contains("data") || !j.contains("isAnswer"))
+    // ✅ ИСПРАВЛЕНО: добавлены || вместо пробелов
+    if (!j.is_object() || !j.contains(KEY_DATA) || !j.contains(KEY_IS_ANSWER)) {
         return false;
+    }
 
-    bool isAnswer = j["isAnswer"];
-
-    // Создаём variant из двух возможных состояний
-    std::variant<std::true_type, std::false_type> nodeType;
+    bool isAnswer = j[KEY_IS_ANSWER].get<bool>();
 
     if (isAnswer) {
-        nodeType = std::true_type{};   // AnswerNode
+        // AnswerNode не должен иметь веток
+        return !j.contains(KEY_YES) && !j.contains(KEY_NO);
     } else {
-        nodeType = std::false_type{};  // QuestionNode
+        // QuestionNode может иметь ветки, но они должны быть валидными
+        bool yesValid = true;
+        bool noValid = true;
+
+        if (j.contains(KEY_YES) && !j[KEY_YES].is_null()) {
+            yesValid = validateNode(j[KEY_YES]);
+        }
+
+        if (j.contains(KEY_NO) && !j[KEY_NO].is_null()) {
+            noValid = validateNode(j[KEY_NO]);
+        }
+
+        return yesValid && noValid;
     }
-
-    struct Validator {
-        const json& j;
-        TreeSerializer* serializer;
-
-        bool operator()(std::true_type) const {  // AnswerNode
-            return !j.contains("yes") && !j.contains("no");
-        }
-
-        bool operator()(std::false_type) const {  // QuestionNode
-            bool yesValid = !j.contains("yes") || j["yes"].is_null() ||
-                           serializer->validateNode(j["yes"]);
-            bool noValid = !j.contains("no") || j["no"].is_null() ||
-                          serializer->validateNode(j["no"]);
-            return yesValid && noValid;
-        }
-    };
-
-    // Используем std::visit с variant
-    return std::visit(Validator{j, this}, nodeType);
 }
+
 size_t TreeSerializer::countNode(const json& j) {
     size_t count = 1;
-    if (!j["isAnswer"]) {
-        if (j.contains("yes")) count += countNode(j["yes"]);
-        if (j.contains("no")) count += countNode(j["no"]);
+
+    if (j.contains(KEY_IS_ANSWER) && !j[KEY_IS_ANSWER].get<bool>()) {
+        if (j.contains(KEY_YES) && !j[KEY_YES].is_null()) {
+            count += countNode(j[KEY_YES]);
+        }
+        if (j.contains(KEY_NO) && !j[KEY_NO].is_null()) {
+            count += countNode(j[KEY_NO]);
+        }
     }
+
     return count;
 }
