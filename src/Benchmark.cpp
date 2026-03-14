@@ -5,10 +5,8 @@
 #include "KnowledgeTree.hpp"
 #include "EntitySearcher.h"
 #include "tree_serializer.h"
-<<<<<<< HEAD
-=======
 #include <memory>
->>>>>>> main
+
 
 
 
